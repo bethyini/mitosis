@@ -1,0 +1,6 @@
+annot_path: slides/MIDOGpp.sqlite
+im_dir: slides
+labels_dir: labels
+patch_dir: patches
+patch_im_dir: patch_imgs
+patch_size: 64

@@ -7,19 +7,11 @@ from tqdm import tqdm
 import pandas as pd
 
 
-with open("config.yaml", "r") as f:
-    config = yaml.safe_load(f)
-
-
-def annotations_to_by_slide(sqlite_path):
+def extract_labels(**kwargs):
     """Get sample annotations with coordinates and labels"""
 
-    # change to directory of annotations
-    os.chdir('/'.join(sqlite_path.split('/')[:-1]))
-    db_name = sqlite_path.split('/')[-1]
-
     # connect to sqlite file
-    conn = sqlite3.connect(db_name)
+    conn = sqlite3.connect(kwargs['annot_path'])
     
     query = """
     SELECT 
@@ -40,23 +32,19 @@ def annotations_to_by_slide(sqlite_path):
     df = pd.read_sql(query, conn)
     conn.close()
 
-    # change to directory outside annotation directory
-    os.chdir('..')
     # create directory for labels
-    os.makedirs(config['labels_dir'], exist_ok=True)
+    os.makedirs(kwargs['labels_dir'], exist_ok=True)
 
     # split dataframe by slide
     for slide_file in tqdm(set(df.slide_file)):
         df_slide = df[df.slide_file==slide_file]
         df_slide = df_slide.drop(columns='slide_file')
-        df_slide.to_csv(f'{config["labels_dir"]}/{slide_file.split(".")[0]}.csv', index=False)
+        df_slide.to_csv(f'{kwargs["labels_dir"]}/{slide_file.split(".")[0]}.csv', index=False)
 
 
 if __name__ == '__main__':
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("sqlite_path", help="Path to sqlite file of annotations")
-    # args = parser.parse_args()
-    # annotations_to_by_slide(args.sqlite_path)
-    annotations_to_by_slide(config['annot_path'])
+    with open("config.yaml", "r") as f:
+        config = yaml.safe_load(f)
+    extract_labels(**config)
 
 

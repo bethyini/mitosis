@@ -1,6 +1,20 @@
+# ALL PARAMETERS OF CODE SHOULD BE CONTROLLED FROM CONFIG
+
+# paths of MIDOG++ dataset files
 annot_path: slides/MIDOGpp.sqlite
-im_dir: slides
-labels_dir: labels
-patch_dir: patches
-patch_im_dir: patch_imgs
-patch_size: 64
+image_dir: slides # original 40x slides
+
+# labels
+labels_dir: labels # directory path to save labels (as a csv per slide)
+
+# parameters for resizing slides to a different magnification
+resize: True # whether to resize slides
+magn: 20 # magnifcation to rescale to
+resized_dir: 20x_slides # directory to store resized slides
+
+# patching
+patch_dir: patches # directory path to save directory
+save_patch_ims: True
+patch_im_dir: patch_imgs # directory path to save images of patches (as .png)
+patch_size: 256
+

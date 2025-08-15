@@ -6,16 +6,13 @@ from tqdm import tqdm
 import numpy as np
 import pandas as pd
 from skimage.io import imread, imsave
-
-
-with open("config.yaml", "r") as f:
-    config = yaml.safe_load(f)
+from skimage.transform import rescale
 
 
 def patch_im(
     im:np.ndarray, 
     centers:pd.DataFrame,
-    patch_size:int = config['patch_size'], 
+    patch_size, 
     skip_boundary:bool=False
 ):  
     '''
@@ -62,32 +59,67 @@ def patch_im(
     return patches
 
 
-def patch_labels(
-    labels_dir = config['labels_dir'], 
-    image_dir = config['im_dir'], 
-    patch_dir = config['patch_dir'], 
-    patch_im_dir = config['patch_im_dir']
+def resize_im(
+   im:np.ndarray,
+   scale:float
 ):
-    slide_ids = [entry.name.split('.')[0] for entry in os.scandir(labels_dir) 
+    return rescale(
+        im, 
+        scale=scale,
+        channel_axis=-1,
+        anti_aliasing=True
+    ) * 255
+
+
+def patch_labels(**kwargs):
+    '''
+    get patches of each slide around each annotated label 
+    '''
+    slide_ids = [entry.name.split('.')[0] for entry in os.scandir(kwargs['labels_dir']) 
         if entry.is_file() and entry.name.endswith(".csv")]
+    # for debug
+    # slide_ids = ['001', '002', '003']
 
-    os.makedirs(patch_dir, exist_ok=True)
-    os.makedirs(patch_im_dir, exist_ok=True)
+    slide_dir = kwargs["image_dir"]
 
-    for slide_id in tqdm(slide_ids):
-        df = pd.read_csv(f'{labels_dir}/{slide_id}.csv')
-        im = imread(f'{image_dir}/{slide_id}.tiff')
-        patches = patch_im(im, df)
-        np.save(f'{patch_dir}/{slide_id}.npy', patches)
-
-        for i in range(len(df)):
-            os.makedirs(f'{patch_im_dir}/{slide_id}', exist_ok=True)
+    # resize images if different magnification is desired
+    if kwargs['resize']:
+        scale = kwargs['magn'] / 40
+        os.makedirs(kwargs["resized_dir"], exist_ok=True)
+        print('Resizing...')
+        for slide_id in tqdm(slide_ids):
+            im = imread(f'{slide_dir}/{slide_id}.tiff')
+            resized_im = resize_im(im, scale)
             imsave(
-                f'{patch_im_dir}/{slide_id}/{df.annotation_id.loc[i]}.png', 
+                f'{kwargs["resized_dir"]}/{slide_id}.tiff', 
+                resized_im.astype('uint8')
+            )
+        slide_dir = kwargs['resized_dir']
+
+    os.makedirs(kwargs["patch_dir"], exist_ok=True)
+    if kwargs['save_patch_ims']:
+        os.makedirs(kwargs["patch_im_dir"], exist_ok=True)
+
+    print('Patching...')
+    for slide_id in tqdm(slide_ids):
+        df = pd.read_csv(f'{kwargs["labels_dir"]}/{slide_id}.csv')
+        if kwargs['resize']: # scale coordinates as well 
+            df['x'], df['y'] = df['x'] * scale, df['y'] * scale 
+        im = imread(f'{slide_dir}/{slide_id}.tiff')
+        patches = patch_im(im, df, kwargs['patch_size'])
+        np.save(f'{kwargs["patch_dir"]}/{slide_id}.npy', patches)
+
+        if not kwargs['save_patch_ims']: continue
+        # save patches as .png files
+        for i in range(len(df)):
+            os.makedirs(f'{kwargs["patch_im_dir"]}/{slide_id}', exist_ok=True)
+            imsave(
+                f'{kwargs["patch_im_dir"]}/{slide_id}/{df.annotation_id.loc[i]}.png', 
                 patches[i].astype('uint8')
             )
     
 
-
 if __name__ == '__main__':
-    patch_labels()
+    with open("config.yaml", "r") as f:
+        config = yaml.safe_load(f)
+    patch_labels(**config)

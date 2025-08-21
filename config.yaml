@@ -1,20 +1,30 @@
 # ALL PARAMETERS OF CODE SHOULD BE CONTROLLED FROM CONFIG
 
 # paths of MIDOG++ dataset files
-annot_path: slides/MIDOGpp.sqlite
-image_dir: slides # original 40x slides
+annot_path: data/slides/MIDOGpp.sqlite
+image_dir: data/slides # original 40x slides
 
 # labels
-labels_dir: labels # directory path to save labels (as a csv per slide)
+labels_dir: data/labels # directory path to save labels (as a csv per slide)
 
 # parameters for resizing slides to a different magnification
-resize: True # whether to resize slides
+resize: False # whether to resize slides
 magn: 20 # magnifcation to rescale to
-resized_dir: 20x_slides # directory to store resized slides
+resized_dir: data/20x_slides # directory to store resized slides
 
 # patching
-patch_dir: patches # directory path to save directory
+patch_dir: data/patches # directory path to save directory
 save_patch_ims: True
-patch_im_dir: patch_imgs # directory path to save images of patches (as .png)
-patch_size: 256
+patch_im_dir: data/patch_imgs # directory path to save images of patches (as .png)
+patch_size: 64
 
+# training params
+train_patches_path: data/model_split/train_patches.npy
+train_labels_path: data/model_split/train_labels.npy
+val_patches_path: data/model_split/val_patches.npy
+val_labels_path: data/model_split/val_labels.npy
+test_patches_path: data/model_split/test_patches.npy
+test_labels_path: data/model_split/test_labels.npy
+batch_size: 128
+# model and training parameters to be added after I decide
+# final architecture and what deserves to be a parameter

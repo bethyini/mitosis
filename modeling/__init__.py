@@ -1,3 +1,4 @@
 from .train import train
 from .get_dataloaders import get_dataloaders
-from .models import CNNClassifer
+from .simple_cnn import CNNClassifer
+from .dense_net import DenseNet3 as DenseNet

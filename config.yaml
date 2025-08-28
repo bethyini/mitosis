@@ -25,6 +25,11 @@ val_patches_path: data/model_split/val_patches.npy
 val_labels_path: data/model_split/val_labels.npy
 test_patches_path: data/model_split/test_patches.npy
 test_labels_path: data/model_split/test_labels.npy
-batch_size: 128
+batch_size: 512
+num_epochs: 100
+lr: 0.0005
+lmbda_l2: 0.0001
+dropout: 0.1
+device: "cuda"
 # model and training parameters to be added after I decide
 # final architecture and what deserves to be a parameter

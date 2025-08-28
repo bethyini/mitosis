@@ -1,17 +1,27 @@
+import os
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from sklearn.metrics import roc_auc_score
 import torch.nn.functional as F
 
-def train(model, train_loader, val_loader=None, num_epochs=5, lr=1e-3, device="mps"):
+def train(
+        model, 
+        train_loader, 
+        val_loader=None, 
+        num_epochs:int=5, 
+        lr:float=1e-3,
+        lmbda_l2:float=1e-4,
+        device:str="cuda"
+    ):
     """
     Train classifier and report loss, accuracy, and AUC per epoch.
     Assumes binary classification with 2 logits per sample.
     """
     model.to(device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=1e-4)
+    optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=lmbda_l2)
 
     for epoch in range(num_epochs):
         model.train()
@@ -58,6 +68,10 @@ def train(model, train_loader, val_loader=None, num_epochs=5, lr=1e-3, device="m
 
             val_acc = ((torch.tensor(val_probs) > 0.5).numpy() == val_labels).mean()
             val_auc = roc_auc_score(val_labels, val_probs)
-            print(f"   Val Acc: {val_acc:.4f}, Val AUC: {val_auc:.4f}\n")
+            print(f"Val Acc: {val_acc:.4f}, Val AUC: {val_auc:.4f}\n")
+
+        os.makedirs('models', exist_ok=True)
+        torch.save(model.state_dict(), f"models/model_{epoch+1}_epoch.pth")
+
 
     return model

@@ -18,13 +18,11 @@ save_patch_ims: True
 patch_im_dir: data/patch_imgs # directory path to save images of patches (as .png)
 patch_size: 64
 
-# training params
-train_patches_path: data/model_split/train_patches.npy
-train_labels_path: data/model_split/train_labels.npy
-val_patches_path: data/model_split/val_patches.npy
-val_labels_path: data/model_split/val_labels.npy
-test_patches_path: data/model_split/test_patches.npy
-test_labels_path: data/model_split/test_labels.npy
-batch_size: 512
-# model and training parameters to be added after I decide
-# final architecture and what deserves to be a parameter
+# cellpose patching
+save_cell_patch_ims: False
+cell_dir: data/cells/patches
+cell_masks_dir: data/cells/masks
+cell_outlines_dir: data/cells/outlines
+cell_patch_im_dir: data/cells/imgs
+cell_centers_dir: data/cells/centers
+# patch size same as patching patch size

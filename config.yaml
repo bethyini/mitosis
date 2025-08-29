@@ -2,7 +2,9 @@
 
 # paths of MIDOG++ dataset files
 annot_path: data/slides/MIDOGpp.sqlite
-image_dir: data/slides # original 40x slides
+original_image_dir: data/slides # original 40x slides
+image_dir: data/normalized_slides # color normalized slides
+target_im: data/slides/001.tiff
 
 # labels
 labels_dir: data/labels # directory path to save labels (as a csv per slide)
@@ -14,7 +16,7 @@ resized_dir: data/20x_slides # directory to store resized slides
 
 # patching
 patch_dir: data/patches # directory path to save directory
-save_patch_ims: True
+save_patch_ims: False
 patch_im_dir: data/patch_imgs # directory path to save images of patches (as .png)
 patch_size: 64
 

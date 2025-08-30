@@ -16,8 +16,15 @@ try:
 except:
     from patch_labels import patch_im
 
-
 def cellpose_patch(
+    im_idxs,
+    **kwargs
+):
+    for im_idx in tqdm(im_idxs):
+        cellpose_patch_im(im_idx, **kwargs)
+
+
+def cellpose_patch_im(
     im_idx,
     image_dir:str,
     patch_size:int,
@@ -81,14 +88,14 @@ def cellpose_patch(
     else:
         patches = np.load(patches_path)
 
-    # save as images
-    if save_cell_patch_ims:
-        print('saving patches as images...')
-        os.makedirs(f'{cell_patch_im_dir}/{im_idx}/', exist_ok=True)
-        for i in tqdm(range(len(patches))):
-            imsave(f'{cell_patch_im_dir}/{im_idx}/{i}.png', patches[i].astype('uint8'))
+    # # save as images
+    # if save_cell_patch_ims:
+    #     print('saving patches as images...')
+    #     os.makedirs(f'{cell_patch_im_dir}/{im_idx}/', exist_ok=True)
+    #     for i in range(len(patches)):
+    #         imsave(f'{cell_patch_im_dir}/{im_idx}/{i}.png', patches[i].astype('uint8'))
 
-    return patches
+    # return patches
 
 
 def get_nuceli_mask(
@@ -127,16 +134,14 @@ def compute_centroids(
     return pd.DataFrame(centroids, columns=['y', 'x'])
 
 
-if __name__=="__main__":
+if __name__ == '__main__':
     import yaml
+    import json
+
     with open("config.yaml", "r") as f:
         config = yaml.safe_load(f)
+    f.close()
 
-    import json
-    split = json.load(open("data/model_split/slide_ids.json", "r"))
+    test_ids = json.load(open("data/model_split/slide_ids.json", "r"))["test_slides"]
 
-    from tqdm import tqdm
-
-    for slide_id in tqdm(split["test_slides"]):
-        cellpose_patch(slide_id, **config)
-
+    cellpose_patch(test_ids, **config)

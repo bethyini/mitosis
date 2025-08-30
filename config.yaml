@@ -20,18 +20,22 @@ save_patch_ims: False
 patch_im_dir: data/patch_imgs # directory path to save images of patches (as .png)
 patch_size: 64
 
+# model params
+color_mean: [0.728, 0.517, 0.745]
+color_std: [0.184, 0.199, 0.108]
+depth: 40
+growth_rate: 12
+reduction: 0.5
+bottleneck: True
+
 # training params
-train_patches_path: data/model_split/train_patches.npy
-train_labels_path: data/model_split/train_labels.npy
-val_patches_path: data/model_split/val_patches.npy
-val_labels_path: data/model_split/val_labels.npy
-test_patches_path: data/model_split/test_patches.npy
-test_labels_path: data/model_split/test_labels.npy
+model_split_dir: data/model_split
 batch_size: 512
 num_epochs: 100
 lr: 0.0005
 lmbda_l2: 0.0001
 dropout: 0.1
-device: "cuda"
+device: "mps"
+seed: 0
 # model and training parameters to be added after I decide
 # final architecture and what deserves to be a parameter

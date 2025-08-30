@@ -13,7 +13,8 @@ def train(
         num_epochs:int=5, 
         lr:float=1e-3,
         lmbda_l2:float=1e-4,
-        device:str="cuda"
+        device:str="cuda",
+        **kwargs
     ):
     """
     Train classifier and report loss, accuracy, and AUC per epoch.

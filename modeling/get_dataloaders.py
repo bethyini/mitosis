@@ -28,16 +28,19 @@ def get_dataloaders(
 
 def get_dataloader(
     patches_path:str,
-    labels_path:str,
-    batch_size:int,
-    color_mean,
-    color_std
+    labels_path:str|None = None,
+    batch_size:int=64,
+    color_mean=None,
+    color_std=None
 ):
     '''
     get dataloader
     '''
     patches = np.load(patches_path) / 255
-    labels = np.load(labels_path)
+    if labels_path is not None:
+        labels = np.load(labels_path)
+    else: 
+        labels = Noen
     dataset = NumpyDataset(patches, labels, color_mean, color_std)
     return DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
@@ -46,9 +49,9 @@ class NumpyDataset(Dataset):
     def __init__(
         self,
         X:np.ndarray,
-        y:np.ndarray,
-        color_mean,
-        color_std
+        y:np.ndarray|None = None,
+        color_mean=None,
+        color_std=None
     ):
         """
         X : numpy array of shape (N, H, W, C) or (N, C, H, W)
@@ -57,6 +60,10 @@ class NumpyDataset(Dataset):
         
         self.X = X
         self.y = y
+        if color_mean is None:
+            color_mean = [0.5, 0.5, 0.5]
+        if color_std is None:
+            color_std = [0.5, 0.5, 0.5]
         self.transform = transforms.Normalize(mean=color_mean, std=color_std)
 
     def __len__(self):
@@ -71,10 +78,12 @@ class NumpyDataset(Dataset):
         else:
             img = torch.from_numpy(img).float()
 
-        label = torch.tensor(self.y[idx]).long()  # class index
-
         # apply optional transforms (e.g. normalization)
         if self.transform:
             img = self.transform(img)
-
-        return img, label
+        
+        if self.y is not None:
+            label = torch.tensor(self.y[idx]).long()  # class index
+            return img, label
+        else:
+            return img

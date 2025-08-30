@@ -21,12 +21,12 @@ def cellpose_patch(
     im_idx,
     image_dir:str,
     patch_size:int,
-    save_cell_patch_ims:bool,
-    cell_dir:str,
-    cell_masks_dir: str,
-    cell_patch_im_dir:str,
-    cell_outlines_dir:str,
-    cell_centers_dir:str,
+    save_cell_patch_ims:bool=False,
+    cell_dir:str="cells",
+    cell_masks_dir:str="masks",
+    cell_patch_im_dir:str="patch_ims",
+    cell_outlines_dir:str="outlines",
+    cell_centers_dir:str="centers",
     skip_boundary=False,
     **kwargs
 ):
@@ -81,12 +81,12 @@ def cellpose_patch(
     else:
         patches = np.load(patches_path)
 
-    # # save as images
-    # if save_as_images:
-    #     print('saving patches as images...')
-    #     os.makedirs(f'{file_prefix}_patches/', exist_ok=True)
-    #     for i in tqdm(range(len(patches))):
-    #         imsave(f'{file_prefix}_patches/{i}.tiff', patches[i].astype('uint8'))
+    # save as images
+    if save_cell_patch_ims:
+        print('saving patches as images...')
+        os.makedirs(f'{cell_patch_im_dir}/{im_idx}/', exist_ok=True)
+        for i in tqdm(range(len(patches))):
+            imsave(f'{cell_patch_im_dir}/{im_idx}/{i}.png', patches[i].astype('uint8'))
 
     return patches
 
@@ -125,6 +125,7 @@ def compute_centroids(
     centroids = np.array([p.centroid for p in props])
 
     return pd.DataFrame(centroids, columns=['y', 'x'])
+
 
 if __name__=="__main__":
     import yaml

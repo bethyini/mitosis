@@ -14,8 +14,8 @@ resized_dir: data/20x_slides # directory to store resized slides
 
 # patching
 patch_dir: data/patches # directory path to save directory
-save_patch_ims: True
-patch_im_dir: data/patch_imgs # directory path to save images of patches (as .png)
+save_patch_ims: False
+patch_ims_dir: data/patch_imgs # directory path to save images of patches (as .png)
 patch_size: 64
 
 # cellpose patching
@@ -23,6 +23,6 @@ save_cell_patch_ims: False
 cell_dir: data/cells/patches
 cell_masks_dir: data/cells/masks
 cell_outlines_dir: data/cells/outlines
-cell_patch_im_dir: data/cells/imgs
+cell_patch_ims_dir: data/cells/imgs
 cell_centers_dir: data/cells/centers
 # patch size same as patching patch size

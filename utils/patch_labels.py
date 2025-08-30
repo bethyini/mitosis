@@ -71,53 +71,64 @@ def resize_im(
     ) * 255
 
 
-def patch_labels(**kwargs):
+def patch_labels(
+    labels_dir:str,
+    image_dir:str,
+    patch_dir:str,
+    patch_size:int,
+    save_patch_ims:bool=False,
+    patch_ims_dir:str|None=None,
+    resize:bool=False,
+    resized_dir:str|None=None,
+    magn:float|None=None,
+    **kwargs
+):
     '''
     get patches of each slide around each annotated label 
     '''
-    slide_ids = [entry.name.split('.')[0] for entry in os.scandir(kwargs['labels_dir']) 
+    slide_ids = [entry.name.split('.')[0] for entry in os.scandir(labels_dir) 
         if entry.is_file() and entry.name.endswith(".csv")]
     # for debug
     # slide_ids = ['001', '002', '003']
 
-    slide_dir = kwargs["image_dir"]
+    slide_dir = image_dir
 
     # resize images if different magnification is desired
-    if kwargs['resize']:
-        scale = kwargs['magn'] / 40
-        os.makedirs(kwargs["resized_dir"], exist_ok=True)
+    if resize:
+        scale = magn / 40
+        os.makedirs(resized_dir, exist_ok=True)
         print('Resizing...')
         for slide_id in tqdm(slide_ids):
             im = imread(f'{slide_dir}/{slide_id}.tiff')
             resized_im = resize_im(im, scale)
             imsave(
-                f'{kwargs["resized_dir"]}/{slide_id}.tiff', 
+                f'{resized_dir}/{slide_id}.tiff', 
                 resized_im.astype('uint8')
             )
-        slide_dir = kwargs['resized_dir']
+        slide_dir = resized_dir
 
-    os.makedirs(kwargs["patch_dir"], exist_ok=True)
-    if kwargs['save_patch_ims']:
-        os.makedirs(kwargs["patch_im_dir"], exist_ok=True)
+    os.makedirs(patch_dir, exist_ok=True)
+    if save_patch_ims:
+        os.makedirs(patch_ims_dir, exist_ok=True)
 
     print('Patching...')
     for slide_id in tqdm(slide_ids):
-        df = pd.read_csv(f'{kwargs["labels_dir"]}/{slide_id}.csv')
-        if kwargs['resize']: # scale coordinates as well 
+        df = pd.read_csv(f'{labels_dir}/{slide_id}.csv')
+        if resize: # scale coordinates as well 
             df['x'], df['y'] = df['x'] * scale, df['y'] * scale 
         im = imread(f'{slide_dir}/{slide_id}.tiff')
-        patches = patch_im(im, df, kwargs['patch_size'])
-        np.save(f'{kwargs["patch_dir"]}/{slide_id}.npy', patches)
+        patches = patch_im(im, df, patch_size)
+        np.save(f'{patch_dir}/{slide_id}.npy', patches)
 
-        if not kwargs['save_patch_ims']: continue
+        if not save_patch_ims: continue
         # save patches as .png files
         for i in range(len(df)):
-            os.makedirs(f'{kwargs["patch_im_dir"]}/{slide_id}', exist_ok=True)
+            os.makedirs(f'{patch_ims_dir}/{slide_id}', exist_ok=True)
             imsave(
-                f'{kwargs["patch_im_dir"]}/{slide_id}/{df.annotation_id.loc[i]}.png', 
+                f'{patch_ims_dir}/{slide_id}/{df.annotation_id.loc[i]}.png', 
                 patches[i].astype('uint8')
             )
-    
+
 
 if __name__ == '__main__':
     with open("config.yaml", "r") as f:

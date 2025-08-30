@@ -1,12 +1,14 @@
-import yaml
-# from train_model import train_model
-from preprocessing import preprocessing
+if __name__ == "__main__":
+    import yaml
 
-with open("config.yaml", "r") as f:
-    config = yaml.safe_load(f)
+    from train_model import train_model
+    from preprocessing import preprocessing
 
-# PROCESSING DATA
-preprocessing(**config)
+    with open("config.yaml", "r") as f:
+        config = yaml.safe_load(f)
 
-# # MODEL TRAINING
-# train_model(**config)
+    # # PROCESSING DATA
+    # preprocessing(**config)
+
+    # # MODEL TRAINING
+    # train_model(**config)

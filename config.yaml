@@ -2,7 +2,9 @@
 
 # paths of MIDOG++ dataset files
 annot_path: data/slides/MIDOGpp.sqlite
-image_dir: data/slides # original 40x slides
+original_image_dir: data/slides # original 40x slides
+image_dir: data/normalized_slides # color normalized slides
+target_im: data/slides/001.tiff
 
 # labels
 labels_dir: data/labels # directory path to save labels (as a csv per slide)
@@ -17,6 +19,26 @@ patch_dir: data/patches # directory path to save directory
 save_patch_ims: False
 patch_ims_dir: data/patch_imgs # directory path to save images of patches (as .png)
 patch_size: 64
+
+# model params
+color_mean: [0.728, 0.517, 0.745]
+color_std: [0.184, 0.199, 0.108]
+depth: 40
+growth_rate: 12
+reduction: 0.5
+bottleneck: True
+
+# training params
+model_split_dir: data/model_split
+batch_size: 512
+num_epochs: 100
+lr: 0.0005
+lmbda_l2: 0.0001
+dropout: 0.1
+device: "cuda"
+seed: 0
+# model and training parameters to be added after I decide
+# final architecture and what deserves to be a parameter
 
 # cellpose patching
 save_cell_patch_ims: False
